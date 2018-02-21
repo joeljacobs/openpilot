@@ -97,6 +97,7 @@ BO_ 742 LEAD_INFO: 8 DSU
 
 BO_ 835 ACC_CONTROL: 8 DSU
  SG_ ACCEL_CMD : 7|16@0- (0.001,0) [-20|20] "m/s2" HCU
+ SG_ ACC_DISTANCE : 20|1@0+ (1,0) [0|1] "" XXX
 
 BO_ 1556 STEERING_LEVERS: 8 XXX
  SG_ TURN_SIGNALS : 29|2@0+ (1,0) [0|3] "" XXX
@@ -201,6 +202,9 @@ BO_ 610 EPS_STATUS: 5 EPS
 
 BO_ 956 GEAR_PACKET: 8 XXX
  SG_ GEAR : 13|6@0+ (1,0) [0|63] "" XXX
+
+BO_ 352 NEW_MSG_1: 8 XXX
+ SG_ LANE_DEPARTURE_BUTTON : 39|1@0+ (1,0) [0|1] "" XXX
 
 CM_ SG_ 548 BRAKE_PRESSURE "seems prop to pedal force";
 CM_ SG_ 548 BRAKE_POSITION "seems proportional to pedal displacement, unclear the max value of 0x1c8";
