@@ -69,6 +69,7 @@ import zmq
 from setproctitle import setproctitle  #pylint: disable=no-name-in-module
 
 from common.params import Params
+from common.realtime import sec_since_boot
 import cereal
 ThermalStatus = cereal.log.ThermalData.ThermalStatus
 
