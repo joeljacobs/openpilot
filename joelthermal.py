@@ -24,6 +24,7 @@ baseURL = "http://api.thingspeak.com/update?api_key=" + thingspeakWriteApi + "&f
 f = urllib2.urlopen(baseURL + "1=" + str(batF) + "&field2=" + str(fanspeed.read()) )
 f.read()
 f.close()
+print(str(batF))
 #for i in thermal:
 #    print(thermal[i])
 #print(batF)
