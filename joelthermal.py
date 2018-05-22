@@ -1,5 +1,7 @@
 """Methods for reading system thermal information."""
 import urllib2
+import urllib
+import json
 from secret import *
 
 def read_tz(x):
@@ -19,13 +21,39 @@ def read_thermal():
 
 read_thermal()
 fanspeed = open("/data/data/com.termux/files/tmp/currentfanspeed", "r")
+battery = open("/sys/class/power_supply/battery/capacity", "r")
+charged = str(battery.read())
 batF = 9.0/5.0 * thermal['bat']/1000 + 32
 baseURL = "http://api.thingspeak.com/update?api_key=" + thingspeakWriteApi + "&field"
-f = urllib2.urlopen(baseURL + "1=" + str(batF) + "&field2=" + str(fanspeed.read()) )
+f = urllib2.urlopen(baseURL + "1=" + str(batF) + "&field2=" + str(fanspeed.read()) + "&field3=" + charged)
 f.read()
 f.close()
-print(str(batF))
-#for i in thermal:
-#    print(thermal[i])
-#print(batF)
-#print(thermal['bat'])
+print(str(batF)+ " " + charged)
+
+
+def sendPushover(title='', msg=''):
+    data = urllib.urlencode({
+        'user': pushoverConfig['user'],
+        'token': pushoverConfig['token'],
+        'title': title,
+        'message': msg
+    })
+
+    try:
+        req = urllib2.Request(pushoverConfig['api'], data)
+
+        response = urllib2.urlopen(req)
+    except urllib2.HTTPError:
+        print 'Failed much'
+
+        return False
+
+    res = json.load(response)
+
+    if res['status'] != 1:
+        print 'Pushover Fail'
+
+if batF > 115:
+    sendPushover("Eon Temp", str(batF))
+if battery < 10:
+    sendPushover("Eon Batt Low", charged)
