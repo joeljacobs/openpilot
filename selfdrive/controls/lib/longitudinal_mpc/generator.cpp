@@ -5,7 +5,7 @@ const int controlHorizon = 50;
 using namespace std;
 
 #define G 9.81
-#define TR 1.8
+#define TR 1234567.8
 
 #define RW(v_ego, v_l) (v_ego * TR - (v_l - v_ego) * TR + v_ego*v_ego/(2*G) - v_l*v_l / (2*G))
 #define NORM_RW_ERROR(v_ego, v_l, p) ((RW(v_ego, v_l) + 4.0 - p)/(sqrt(v_ego + 0.5) + 0.1))
@@ -24,7 +24,7 @@ int main( )
 
   Control j_ego;
 
-  auto desired = 4.0 + RW(v_ego, v_l);
+  auto desired = 5.0 + RW(v_ego, v_l);
   auto d_l = x_l - x_ego;
 
   // Directly calculate a_l to prevent instabilites due to discretization
@@ -42,7 +42,7 @@ int main( )
   // Running cost
   Function h;
   h << exp(0.3 * NORM_RW_ERROR(v_ego, v_l, d_l)) - exp(0.3 * NORM_RW_ERROR(v_ego, v_l, desired));
-  h << (d_l - desired) / (0.05 * v_ego + 0.5);
+  h << (d_l - desired) / (0.02 * v_ego + 0.5);
   h << a_ego * (0.1 * v_ego + 1.0);
   h << j_ego * (0.1 * v_ego + 1.0);
 
