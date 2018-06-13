@@ -53,7 +53,7 @@ def sendPushover(title='', msg=''):
     if res['status'] != 1:
         print 'Pushover Fail'
 
-if batF > 115:
+if batF > 120:
     sendPushover("Eon Temp", str(batF))
 if battery < 10:
     sendPushover("Eon Batt Low", charged)
