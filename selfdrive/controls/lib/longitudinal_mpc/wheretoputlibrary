@@ -1,0 +1,21 @@
+To "make generator"
+
+rsync -aP /data/openpilot/selfdrive/controls/lib/longitudinal_mpc/include /system/comma/usr/local/
+
+rsync -aP /data/openpilot/selfdrive/controls/lib/longitudinal_mpc/include/libacado_toolkit_s.so.1.2.2beta /data/data/com.termux/files/usr/lib/
+rsync -aP /data/openpilot/selfdrive/controls/lib/longitudinal_mpc/include/libacado_csparse.a /data/data/com.termux/files/usr/lib/
+rsync -aP /data/openpilot/selfdrive/controls/lib/longitudinal_mpc/include/libacado_casadi.a /data/data/com.termux/files/usr/lib/
+
+You need to make generator, then run generator before running a general "make" in longitudinal_mpc
+
+I was able to make it all work this time by creating a build directory in ACADOToolkit, CD-ing into it and running:
+for i in $(grep -lir "march=native" *); do sed -i "s/native/armv8a/g" $i; done
+mkdir build
+cd build
+cmake ..
+make
+make install
+#I also had to do the following after the first time I ran make install to make it finish:
+cd lib
+rsync -aP * /data/data/com.termux/files/usr/lib/
+
