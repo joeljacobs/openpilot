@@ -1,0 +1,7 @@
+Need to start crond.
+I added it to /data/data/com.termux/files/continue.sh
+
+as:
+
+# start crond
+/data/data/com.termux/files/usr/bin/applets/crond
