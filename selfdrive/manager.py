@@ -310,6 +310,8 @@ def manager_thread():
 
   params = Params()
   logger_dead = False
+  count = 0
+  fan_speed = 0
 
   while 1:
     # get health of board, log this in "thermal"
@@ -341,7 +343,6 @@ def manager_thread():
 
     # report to server once per minute
     if (count%60) == 0:
-      count=count,
       fanfile = open("/tmp/currentfanspeed", "w")
       fanfile.write(str(fan_speed))
       fanfile.close()
@@ -350,6 +351,7 @@ def manager_thread():
     if params.get("DoUninstall") == "1":
       break
 
+    count += 1
 def get_installed_apks():
   dat = subprocess.check_output(["pm", "list", "packages", "-f"]).strip().split("\n")
   ret = {}
