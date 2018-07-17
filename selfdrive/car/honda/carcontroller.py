@@ -1,4 +1,3 @@
-import os
 from collections import namedtuple
 from selfdrive.boardd.boardd import can_list_to_can_capnp
 from selfdrive.controls.lib.drive_helpers import rate_limit
@@ -7,14 +6,13 @@ from selfdrive.car.honda import hondacan
 from selfdrive.car.honda.values import AH, CruiseButtons, CAR
 from selfdrive.can.packer import CANPacker
 
-
 def actuator_hystereses(brake, braking, brake_steady, v_ego, car_fingerprint):
   # hyst params... TODO: move these to VehicleParams
   brake_hyst_on = 0.02     # to activate brakes exceed this value
   brake_hyst_off = 0.005                     # to deactivate brakes below this value
   brake_hyst_gap = 0.01                      # don't change brake command for small ocilalitons within this value
 
-  #*** histeresys logic to avoid brake blinking. go above 0.1 to trigger
+  #*** histeresis logic to avoid brake blinking. go above 0.1 to trigger
   if (brake < brake_hyst_on and not braking) or brake < brake_hyst_off:
     brake = 0.
   braking = brake > 0.
@@ -90,7 +88,6 @@ class CarController(object):
     else:
       hud_lanes = 0
 
-    # TODO: factor this out better
     if enabled:
       if hud_show_car:
         hud_car = 2
@@ -111,7 +108,6 @@ class CarController(object):
                   0xc1, hud_lanes, int(snd_beep), snd_chime, fcw_display, acc_alert, steer_required, 1, 0)
 
     if not all(isinstance(x, int) and 0 <= x < 256 for x in hud):
-      print "INVALID HUD", hud
       hud = HUDData(0xc6, 255, 64, 0xc0, 209, 0x40, 0, 0, 0, 0)
 
     # **** process the car messages ****
@@ -123,8 +119,7 @@ class CarController(object):
     elif CS.CP.carFingerprint in (CAR.CRV, CAR.ACURA_RDX):
       STEER_MAX = 0x3e8  # CR-V only uses 12-bits and requires a lower value (max value from energee)
     else:
-      is_fw_modified = os.getenv("DONGLE_ID") in ['99c94dc769b5d96e']
-      STEER_MAX = 0x1FFF if is_fw_modified else 0x1000
+      STEER_MAX = 0x1000
 
     # steer torque is converted back to CAN reference (positive when steering right)
     apply_gas = clip(actuators.gas, 0., 1.)
@@ -132,15 +127,14 @@ class CarController(object):
     apply_steer = int(clip(-actuators.steer * STEER_MAX, -STEER_MAX, STEER_MAX))
 
     # any other cp.vl[0x18F]['STEER_STATUS'] is common and can happen during user override. sending 0 torque to avoid EPS sending error 5
-    if CS.steer_not_allowed:
-      apply_steer = 0
+    lkas_active = enabled and not CS.steer_not_allowed
 
     # Send CAN commands.
     can_sends = []
 
     # Send steering command.
     idx = frame % 4
-    can_sends.append(hondacan.create_steering_control(self.packer, apply_steer, enabled, CS.CP.carFingerprint, idx))
+    can_sends.append(hondacan.create_steering_control(self.packer, apply_steer, lkas_active, CS.CP.carFingerprint, idx))
 
     # Send dashboard UI commands.
     if (frame % 10) == 0:

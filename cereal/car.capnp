@@ -59,6 +59,10 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     debugAlert @34;
     steerTempUnavailableMute @35;
     resumeRequired @36;
+    preDriverDistracted @37;
+    promptDriverDistracted @38;
+    driverDistracted @39;
+    geofence @40;
   }
 }
 
@@ -172,6 +176,7 @@ struct RadarState {
   enum Error {
     commIssue @0;
     fault @1;
+    wrongConfig @2;
   }
 
   # similar to LiveTracks

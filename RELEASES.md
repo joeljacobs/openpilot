@@ -1,3 +1,25 @@
+Version 0.5 (2018-07-11)
+========================
+ * Driver Monitoring (beta) option in settings!
+ * Make visiond, loggerd and UI use less resources
+ * 60 FPS UI
+ * Better car parameters for most cars
+ * New sidebar with stats
+ * Remove Waze and Spotify to free up system resources
+ * Remove rear view mirror option
+ * Calibration 3x faster
+
+Version 0.4.7.2 (2018-06-25)
+==========================
+ * Fix loggerd lag issue
+ * No longer prompt for updates
+ * Mitigate right lane hugging for properly mounted EON (procedure on wiki)
+
+Version 0.4.7.1 (2018-06-18)
+==========================
+ * Fix Acura ILX steer faults
+ * Fix bug in mock car
+
 Version 0.4.7 (2018-06-15)
 ==========================
  * New model!
