@@ -24,7 +24,7 @@ int main( )
 
   Control j_ego;
 
-  auto desired = 8.0 + RW(v_ego, v_l);
+  auto desired = 5.0 + RW(v_ego, v_l);
   auto d_l = x_l - x_ego;
 
   // Equations of motion
