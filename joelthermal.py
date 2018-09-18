@@ -20,7 +20,8 @@ def read_thermal():
   thermal['bat'] = read_tz(29)
 
 read_thermal()
-fanspeed = open("/data/data/com.termux/files/tmp/currentfanspeed", "r")
+#fanspeed = open("/data/data/com.termux/files/tmp/currentfanspeed", "r")
+fanspeed = 5
 battery = open("/sys/class/power_supply/battery/capacity", "r")
 charged = str(battery.read())
 batF = 9.0/5.0 * thermal['bat']/1000 + 32
