@@ -277,6 +277,10 @@ def thermald_thread():
         location=(location.to_dict() if location else None),
         thermal=msg.to_dict())
 
+      fanfile = open("/tmp/currentfanspeed", "w")
+      fanfile.write(str(fan_speed))
+      fanfile.close()
+
     count += 1
 
 
