@@ -280,10 +280,6 @@ def thermald_thread():
       fanfile.write(str(fan_speed))
       fanfile.close()
 
-      fanfile = open("/tmp/currentfanspeed", "w")
-      fanfile.write(str(fan_speed))
-      fanfile.close()
-
     count += 1
 
 def main(gctx=None):
