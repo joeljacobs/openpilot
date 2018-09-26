@@ -123,7 +123,8 @@ class CarController(object):
 
     # gas and brake
 
-    apply_gas = clip(actuators.gas, 0., 1.)
+    #apply_gas = clip(actuators.gas, 0., 1.)
+    apply_gas = actuators.gas
 
     if CS.CP.enableGasInterceptor:
       # send only send brake values if interceptor is detected. otherwise, send the regular value
