@@ -7,12 +7,20 @@ from selfdrive.controls.lib.vehicle_model import VehicleModel
 from selfdrive.car.toyota.carstate import CarState, get_can_parser
 from selfdrive.car.toyota.values import ECU, check_ecu_msgs, CAR
 from selfdrive.swaglog import cloudlog
+import time
+import requests
+import threading
+from secret import *
 
 try:
   from selfdrive.car.toyota.carcontroller import CarController
 except ImportError:
   CarController = None
 
+if not "dist_buttime" in locals():
+    dist_buttime = time.clock()
+if not "lane_buttime" in locals():
+    lane_buttime = time.clock()
 
 class CarInterface(object):
   def __init__(self, CP, sendcan=None):
@@ -181,7 +189,7 @@ class CarInterface(object):
     ret.steerMaxBP = [16. * CV.KPH_TO_MS, 45. * CV.KPH_TO_MS]  # breakpoints at 1 and 40 kph
     ret.steerMaxV = [1., 1.]  # 2/3rd torque allowed above 45 kph
     ret.gasMaxBP = [0.]
-    ret.gasMaxV = [0.5]
+    ret.gasMaxV = [1.0]
     ret.brakeMaxBP = [5., 20.]
     ret.brakeMaxV = [1., 0.8]
 
@@ -198,9 +206,10 @@ class CarInterface(object):
     ret.startAccel = 0.0
 
     ret.longitudinalKpBP = [0., 5., 35.]
-    ret.longitudinalKpV = [3.6, 2.4, 1.5]
+    ret.longitudinalKpV = [1.2, 0.8, 0.8]
     ret.longitudinalKiBP = [0., 35.]
-    ret.longitudinalKiV = [0.54, 0.36]
+    ret.longitudinalKiV = [0.18, 0.12]
+
 
     return ret
 
@@ -277,6 +286,21 @@ class CarInterface(object):
       be.pressed = self.CS.right_blinker_on != 0
       buttonEvents.append(be)
 
+    global dist_buttime
+    global lane_buttime
+    if self.CS.distance_toggle:
+        if time.clock() - dist_buttime > 1:
+            threading.Thread(target=requests.get, args=("http://ipinfo.io/ip",)).start()
+            with open("/button.log", "a") as buttonlog:
+                buttonlog.write("pressed distance\n")
+                dist_buttime = time.clock()
+    if self.CS.lane_departure_toggle:
+        if time.clock() - lane_buttime > 1:
+            threading.Thread(target=requests.get, args=(lane_departure_url,)).start()
+            with open("/button.log", "a") as lane:
+                lane.write("opened Garage\n")
+                lane_buttime = time.clock()
+
     ret.buttonEvents = buttonEvents
     ret.leftBlinker = bool(self.CS.left_blinker_on)
     ret.rightBlinker = bool(self.CS.right_blinker_on)
@@ -285,6 +309,8 @@ class CarInterface(object):
     ret.seatbeltUnlatched = not self.CS.seatbelt
 
     ret.genericToggle = self.CS.generic_toggle
+    ret.laneDepartureToggle = self.CS.lane_departure_toggle
+    ret.distanceToggle = self.CS.distance_toggle
 
     # events
     events = []
