@@ -80,6 +80,7 @@ class CarState(object):
     self.shifter_values = self.can_define.dv["GEAR_PACKET"]['GEAR']
     self.left_blinker_on = 0
     self.right_blinker_on = 0
+    self.distanceToggle = 1
 
     # initialize can parser
     self.car_fingerprint = CP.carFingerprint
@@ -161,3 +162,14 @@ class CarState(object):
       self.generic_toggle = bool(cp.vl["LIGHT_STALK"]['AUTO_HIGH_BEAM'])
     self.lane_departure_toggle = bool(cp.vl["JOEL_ID"]['LANE_WARNING'])
     self.distance_toggle = bool(cp.vl["JOEL_ID"]['ACC_DISTANCE'])
+    #print str(self.distance_toggle) + " distance_toggle"
+    #print str(cp.vl["JOEL_ID"]['ACC_DISTANCE']) + " button reading"
+    #if self.distance_toggle == False:
+    #    print "NOT"
+    #if self.distance_toggle:
+    #    if self.distanceToggle != 3:
+    #        self.distanceToggle += 1
+    #    else:
+    #        self.distanceToggle = 1
+    #self.distance_toggle = False
+
