@@ -262,7 +262,8 @@ class CarInterface(object):
     # cruise state
     ret.cruiseState.enabled = self.CS.pcm_acc_status != 0
     ret.cruiseState.speed = self.CS.v_cruise_pcm * CV.KPH_TO_MS
-    ret.cruiseState.available = bool(self.CS.main_on)
+    #ret.cruiseState.available = bool(self.CS.main_on)
+    ret.cruiseState.available = True
     ret.cruiseState.speedOffset = 0.
 	
     if self.CP.carFingerprint in [CAR.RAV4H, CAR.HIGHLANDERH, CAR.HIGHLANDER] or self.CP.enableGasInterceptor:
@@ -310,7 +311,7 @@ class CarInterface(object):
 
     ret.genericToggle = self.CS.generic_toggle
     ret.laneDepartureToggle = self.CS.lane_departure_toggle
-    ret.distanceToggle = self.CS.distance_toggle
+    ret.distanceToggle = self.CS.distanceToggle
 
     # events
     events = []

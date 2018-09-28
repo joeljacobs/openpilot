@@ -3,6 +3,7 @@ from common.kalman.simple_kalman import KF1D
 from selfdrive.can.parser import CANParser, CANDefine
 from selfdrive.config import Conversions as CV
 from selfdrive.car.toyota.values import CAR, DBC, STEER_THRESHOLD
+import time
 
 def parse_gear_shifter(gear, vals):
 
@@ -13,6 +14,8 @@ def parse_gear_shifter(gear, vals):
   except KeyError:
     return "unknown"
 
+if not "dist_buttime" in locals():
+    dist_buttime = time.clock()
 
 def get_can_parser(CP):
 
@@ -166,10 +169,11 @@ class CarState(object):
     #print str(cp.vl["JOEL_ID"]['ACC_DISTANCE']) + " button reading"
     #if self.distance_toggle == False:
     #    print "NOT"
-    #if self.distance_toggle:
-    #    if self.distanceToggle != 3:
-    #        self.distanceToggle += 1
-    #    else:
-    #        self.distanceToggle = 1
-    #self.distance_toggle = False
-
+    global dist_buttime
+    if self.distance_toggle == True:
+         if time.clock() - dist_buttime > .05:
+            if self.distanceToggle != 3:
+                self.distanceToggle += 1
+            else:
+                self.distanceToggle = 1
+         dist_buttime = time.clock()
