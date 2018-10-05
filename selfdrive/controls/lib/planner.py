@@ -221,11 +221,11 @@ class LongitudinalMpc(object):
 
     # Calculate mpc
     t = sec_since_boot()
-    if CS.distanceToggle == 3:
+    if CS.distanceToggle == 3: #honda was 2
       self.TR=0.4 # 10m at 40km/hr
-    elif CS.distanceToggle == 2:
+    elif CS.distanceToggle == 2: #honda was 1
      self.TR=0.9 # 20m at 40km/hr
-    elif CS.distanceToggle == 1:
+    elif CS.distanceToggle == 1: #honda was 3
       self.TR=1.8 # 30m at 40km/hr
     if CS.vEgo < 11.4:
       TR=1.8 # under 41km/hr use a TR of 1.8 seconds
