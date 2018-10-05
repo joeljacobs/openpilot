@@ -105,8 +105,13 @@ class CarController(object):
     #print chime, alert_id, hud_alert
     fcw_display, steer_required, acc_alert = process_hud_alert(hud_alert)
 
+    if CS.distanceToggle == 1:
+      hudDistanceToggle = 3
+    else:
+      hudDistanceToggle = CS.distanceToggle - 1
+
     #hud = HUDData(int(pcm_accel), int(round(hud_v_cruise)), 1, hud_car,
-    hud = HUDData(int(pcm_accel), int(round(hud_v_cruise)), 1, int(CS.distanceToggle),
+    hud = HUDData(int(pcm_accel), int(round(hud_v_cruise)), 1, int(hudDistanceToggle),
                   0xc1, hud_lanes, int(snd_beep), snd_chime, fcw_display, acc_alert, steer_required, 1, 0)
 
     if not all(isinstance(x, int) and 0 <= x < 256 for x in hud):
