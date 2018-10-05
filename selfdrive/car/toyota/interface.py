@@ -17,8 +17,6 @@ try:
 except ImportError:
   CarController = None
 
-if not "dist_buttime" in locals():
-    dist_buttime = time.clock()
 if not "lane_buttime" in locals():
     lane_buttime = time.clock()
 
@@ -287,14 +285,7 @@ class CarInterface(object):
       be.pressed = self.CS.right_blinker_on != 0
       buttonEvents.append(be)
 
-    global dist_buttime
     global lane_buttime
-    if self.CS.distance_toggle:
-        if time.clock() - dist_buttime > 1:
-            threading.Thread(target=requests.get, args=("http://ipinfo.io/ip",)).start()
-            with open("/button.log", "a") as buttonlog:
-                buttonlog.write("pressed distance\n")
-                dist_buttime = time.clock()
     if self.CS.lane_departure_toggle:
         if time.clock() - lane_buttime > 1:
             threading.Thread(target=requests.get, args=(lane_departure_url,)).start()

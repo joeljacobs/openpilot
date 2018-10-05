@@ -42,6 +42,7 @@ def get_can_parser(CP):
     ("MAIN_ON", "PCM_CRUISE_2", 0),
     ("SET_SPEED", "PCM_CRUISE_2", 0),
     ("LOW_SPEED_LOCKOUT", "PCM_CRUISE_2", 0),
+    ("DISTANCE_LINES", "PCM_CRUISE_2", 0),
     ("STEER_TORQUE_DRIVER", "STEER_TORQUE_SENSOR", 0),
     ("STEER_TORQUE_EPS", "STEER_TORQUE_SENSOR", 0),
     ("TURN_SIGNALS", "STEERING_LEVERS", 3),   # 3 is no blinkers
@@ -84,6 +85,7 @@ class CarState(object):
     self.left_blinker_on = 0
     self.right_blinker_on = 0
     self.distanceToggle = 1
+    self.distance_toggle = False
 
     # initialize can parser
     self.car_fingerprint = CP.carFingerprint
@@ -158,22 +160,16 @@ class CarState(object):
     self.pcm_acc_status = cp.vl["PCM_CRUISE"]['CRUISE_STATE']
     self.gas_pressed = not cp.vl["PCM_CRUISE"]['GAS_RELEASED']
     self.low_speed_lockout = cp.vl["PCM_CRUISE_2"]['LOW_SPEED_LOCKOUT'] == 2
+    self.read_distance_lines = cp.vl["PCM_CRUISE_2"]['DISTANCE_LINES'] 
     self.brake_lights = bool(cp.vl["ESP_CONTROL"]['BRAKE_LIGHTS_ACC'] or self.brake_pressed)
     if self.CP.carFingerprint == CAR.PRIUS:
       self.generic_toggle = cp.vl["AUTOPARK_STATUS"]['STATE'] != 0
     else:
       self.generic_toggle = bool(cp.vl["LIGHT_STALK"]['AUTO_HIGH_BEAM'])
     self.lane_departure_toggle = bool(cp.vl["JOEL_ID"]['LANE_WARNING'])
-    self.distance_toggle = bool(cp.vl["JOEL_ID"]['ACC_DISTANCE'])
-    #print str(self.distance_toggle) + " distance_toggle"
-    #print str(cp.vl["JOEL_ID"]['ACC_DISTANCE']) + " button reading"
-    #if self.distance_toggle == False:
-    #    print "NOT"
     global dist_buttime
-    if self.distance_toggle == True:
-         if time.clock() - dist_buttime > .05:
-            if self.distanceToggle != 3:
-                self.distanceToggle += 1
-            else:
-                self.distanceToggle = 1
+    if time.clock() - dist_buttime > .05:
+         print str(self.read_distance_lines) + " read_distance_lines"
+         self.distance_toggle = bool(cp.vl["JOEL_ID"]['ACC_DISTANCE'])
+         self.distanceToggle = self.read_distance_lines
          dist_buttime = time.clock()

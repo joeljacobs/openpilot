@@ -24,7 +24,7 @@ _DT_MPC = 0.2  # 5Hz
 MAX_SPEED_ERROR = 2.0
 AWARENESS_DECEL = -0.2     # car smoothly decel at .2m/s^2 when user is distracted
 
-TR=0.9 # CS.distance_toggle default
+TR=0.9 # CS.distanceToggle default
 
 GPS_PLANNER_ADDR = "192.168.5.1"
 
@@ -221,11 +221,11 @@ class LongitudinalMpc(object):
 
     # Calculate mpc
     t = sec_since_boot()
-    if CS.distanceToggle == 1:
-     self.TR=0.9 # 20m at 40km/hr
-    elif CS.distanceToggle == 2:
+    if CS.distanceToggle == 3:
       self.TR=0.4 # 10m at 40km/hr
-    elif CS.distanceToggle == 3:
+    elif CS.distanceToggle == 2:
+     self.TR=0.9 # 20m at 40km/hr
+    elif CS.distanceToggle == 1:
       self.TR=1.8 # 30m at 40km/hr
     if CS.vEgo < 11.4:
       TR=1.8 # under 41km/hr use a TR of 1.8 seconds
