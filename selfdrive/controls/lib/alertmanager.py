@@ -66,13 +66,13 @@ class AlertManager(object):
         "",
         "",
         AlertStatus.normal, AlertSize.none,
-        Priority.MID, None, "beepSingle", .2, 0., 0.),
+        Priority.MID, None, None, .2, 0., 0.),
 
     "disable": Alert(
         "",
         "",
         AlertStatus.normal, AlertSize.none,
-        Priority.MID, None, "beepSingle", .2, 0., 0.),
+        Priority.MID, None, None, .2, 0., 0.),
 
     "fcw": Alert(
         "BRAKE!",
@@ -84,7 +84,7 @@ class AlertManager(object):
         "TAKE CONTROL",
         "Turn Exceeds Steering Limit",
         AlertStatus.userPrompt, AlertSize.mid,
-        Priority.LOW, "steerRequired", "chimeSingle", 1., 2., 3.),
+        Priority.LOW, "steerRequired", None, 1., 2., 3.),
 
     "steerTempUnavailable": Alert(
         "TAKE CONTROL",
