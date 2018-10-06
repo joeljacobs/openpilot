@@ -24,18 +24,20 @@ _DT_MPC = 0.2  # 5Hz
 MAX_SPEED_ERROR = 2.0
 AWARENESS_DECEL = -0.2     # car smoothly decel at .2m/s^2 when user is distracted
 
+TR=0.9 # CS.distanceToggle default
+
 GPS_PLANNER_ADDR = "192.168.5.1"
 
 # lookup tables VS speed to determine min and max accels in cruise
 # make sure these accelerations are smaller than mpc limits
-_A_CRUISE_MIN_V  = [-1.0, -.8, -.67, -.5, -.30]
+_A_CRUISE_MIN_V  = [-3.0, -3.0, -1.34, -1.0, -1.0]
 _A_CRUISE_MIN_BP = [   0., 5.,  10., 20.,  40.]
 
 # need fast accel at very low speed for stop and go
 # make sure these accelerations are smaller than mpc limits
-_A_CRUISE_MAX_V = [1.1, 1.1, .8, .5, .3]
-_A_CRUISE_MAX_V_FOLLOWING = [1.6, 1.6, 1.2, .7, .3]
-_A_CRUISE_MAX_BP = [0.,  5., 10., 20., 40.]
+_A_CRUISE_MAX_V = [2.5, 3.5, 2.0, 1.2, .7]
+_A_CRUISE_MAX_V_FOLLOWING = [2.5, 3.5, 2.0, 1.2, .7]
+_A_CRUISE_MAX_BP = [0.,  5., 10., 20., 40.] #[0, 11, 22, 45, 90]m/s   [0,  3,  6, 12, 24]km/h
 
 # Lookup table for turns
 _A_TOTAL_MAX_V = [1.5, 1.9, 3.2]
@@ -140,6 +142,7 @@ class LongitudinalMpc(object):
   def __init__(self, mpc_id, live_longitudinal_mpc):
     self.live_longitudinal_mpc = live_longitudinal_mpc
     self.mpc_id = mpc_id
+    self.TR = TR
 
     self.setup_mpc()
     self.v_mpc = 0.0
@@ -217,7 +220,16 @@ class LongitudinalMpc(object):
 
     # Calculate mpc
     t = sec_since_boot()
-    n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead)
+    if CS.distanceToggle == 3: #honda was 2
+      self.TR=0.4 # 10m at 40km/hr
+    elif CS.distanceToggle == 2: #honda was 1
+     self.TR=0.9 # 20m at 40km/hr
+    elif CS.distanceToggle == 1: #honda was 3
+      self.TR=1.8 # 30m at 40km/hr
+    if CS.vEgo < 11.4:
+      TR=1.8 # under 41km/hr use a TR of 1.8 seconds
+    print self.TR,CS.distanceToggle
+    n_its = self.libmpc.run_mpc(self.cur_state, self.mpc_solution, self.a_lead_tau, a_lead, self.TR)
     duration = int((sec_since_boot() - t) * 1e9)
     self.send_mpc_solution(n_its, duration)
 

@@ -3,6 +3,7 @@ from common.kalman.simple_kalman import KF1D
 from selfdrive.can.parser import CANParser, CANDefine
 from selfdrive.config import Conversions as CV
 from selfdrive.car.toyota.values import CAR, DBC, STEER_THRESHOLD
+import time
 
 def parse_gear_shifter(gear, vals):
 
@@ -13,6 +14,8 @@ def parse_gear_shifter(gear, vals):
   except KeyError:
     return "unknown"
 
+if not "dist_buttime" in locals():
+    dist_buttime = time.clock()
 
 def get_can_parser(CP):
 
@@ -39,6 +42,7 @@ def get_can_parser(CP):
     ("MAIN_ON", "PCM_CRUISE_2", 0),
     ("SET_SPEED", "PCM_CRUISE_2", 0),
     ("LOW_SPEED_LOCKOUT", "PCM_CRUISE_2", 0),
+    ("DISTANCE_LINES", "PCM_CRUISE_2", 0),
     ("STEER_TORQUE_DRIVER", "STEER_TORQUE_SENSOR", 0),
     ("STEER_TORQUE_EPS", "STEER_TORQUE_SENSOR", 0),
     ("TURN_SIGNALS", "STEERING_LEVERS", 3),   # 3 is no blinkers
@@ -46,6 +50,8 @@ def get_can_parser(CP):
     ("IPAS_STATE", "EPS_STATUS", 1),
     ("BRAKE_LIGHTS_ACC", "ESP_CONTROL", 0),
     ("AUTO_HIGH_BEAM", "LIGHT_STALK", 0),
+    ("ACC_DISTANCE", "JOEL_ID", 0),
+    ("LANE_WARNING", "JOEL_ID", 0),
   ]
 
   checks = [
@@ -78,6 +84,8 @@ class CarState(object):
     self.shifter_values = self.can_define.dv["GEAR_PACKET"]['GEAR']
     self.left_blinker_on = 0
     self.right_blinker_on = 0
+    self.distanceToggle = 1
+    self.distance_toggle = False
 
     # initialize can parser
     self.car_fingerprint = CP.carFingerprint
@@ -152,8 +160,16 @@ class CarState(object):
     self.pcm_acc_status = cp.vl["PCM_CRUISE"]['CRUISE_STATE']
     self.gas_pressed = not cp.vl["PCM_CRUISE"]['GAS_RELEASED']
     self.low_speed_lockout = cp.vl["PCM_CRUISE_2"]['LOW_SPEED_LOCKOUT'] == 2
+    self.read_distance_lines = cp.vl["PCM_CRUISE_2"]['DISTANCE_LINES']
     self.brake_lights = bool(cp.vl["ESP_CONTROL"]['BRAKE_LIGHTS_ACC'] or self.brake_pressed)
     if self.CP.carFingerprint == CAR.PRIUS:
       self.generic_toggle = cp.vl["AUTOPARK_STATUS"]['STATE'] != 0
     else:
       self.generic_toggle = bool(cp.vl["LIGHT_STALK"]['AUTO_HIGH_BEAM'])
+    self.lane_departure_toggle = bool(cp.vl["JOEL_ID"]['LANE_WARNING'])
+    global dist_buttime
+    if time.clock() - dist_buttime > .05:
+         print str(self.read_distance_lines) + " read_distance_lines"
+         self.distance_toggle = bool(cp.vl["JOEL_ID"]['ACC_DISTANCE'])
+         self.distanceToggle = self.read_distance_lines
+         dist_buttime = time.clock()

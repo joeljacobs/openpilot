@@ -214,10 +214,16 @@ class CarController(object):
     elif ECU.APGS in self.fake_ecus:
       can_sends.append(create_ipas_steer_command(self.packer, 0, 0, True))
 
+    if CS.distance_toggle == True:
+        distance = 0b01110011 #x73 comma with toggle - toggle is 5th bit from right
+       #distance = 0b10010011 #x93 stock with toggle
+    else:
+        distance = 0b01100011 #x63 comma with toggle - toggle is 5th bit from right
+
     # accel cmd comes from DSU, but we can spam can to cancel the system even if we are using lat only control
     if (frame % 3 == 0 and ECU.DSU in self.fake_ecus) or (pcm_cancel_cmd and ECU.CAM in self.fake_ecus):
       if ECU.DSU in self.fake_ecus:
-        can_sends.append(create_accel_command(self.packer, apply_accel, pcm_cancel_cmd, self.standstill_req))
+        can_sends.append(create_accel_command(self.packer, apply_accel, pcm_cancel_cmd, self.standstill_req, distance))
       else:
         can_sends.append(create_accel_command(self.packer, 0, pcm_cancel_cmd, False))
 		

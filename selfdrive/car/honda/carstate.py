@@ -49,6 +49,9 @@ def get_can_signals(CP):
       ("CRUISE_BUTTONS", "SCM_BUTTONS", 0),
       ("ESP_DISABLED", "VSA_STATUS", 1),
       ("HUD_LEAD", "ACC_HUD", 0),
+      ("HUD_DISTANCE_3", "ACC_HUD", 0),
+      ("HUD_DISTANCE_LINES", "ACC_HUD", 0),
+      ("ENABLE_MINI_CAR", "ACC_HUD", 0),
       ("USER_BRAKE", "VSA_STATUS", 0),
       ("STEER_STATUS", "STEER_STATUS", 5),
       ("GEAR_SHIFTER", "GEARBOX", 0),
@@ -142,6 +145,7 @@ class CarState(object):
 
     self.cruise_buttons = 0
     self.cruise_setting = 0
+    self.distanceToggle = 1
     self.v_cruise_pcm_prev = 0
     self.blinker_on = 0
 
@@ -229,6 +233,11 @@ class CarState(object):
 
     self.cruise_setting = cp.vl["SCM_BUTTONS"]['CRUISE_SETTING']
     self.cruise_buttons = cp.vl["SCM_BUTTONS"]['CRUISE_BUTTONS']
+    if self.cruise_setting == 3 and self.prev_cruise_setting == 0:
+        if self.distanceToggle != 3:
+            self.distanceToggle += 1
+        else:
+            self.distanceToggle = 1
 
     self.blinker_on = cp.vl["SCM_FEEDBACK"]['LEFT_BLINKER'] or cp.vl["SCM_FEEDBACK"]['RIGHT_BLINKER']
     self.left_blinker_on = cp.vl["SCM_FEEDBACK"]['LEFT_BLINKER']
@@ -288,6 +297,9 @@ class CarState(object):
     self.user_brake = cp.vl["VSA_STATUS"]['USER_BRAKE']
     self.pcm_acc_status = cp.vl["POWERTRAIN_DATA"]['ACC_STATUS']
     self.hud_lead = cp.vl["ACC_HUD"]['HUD_LEAD']
+    self.hud_distance = cp.vl["ACC_HUD"]['HUD_DISTANCE_3']
+    self.hud_distance_lines = cp.vl["ACC_HUD"]['HUD_DISTANCE_LINES']
+    self.hud_mini_car = cp.vl["ACC_HUD"]['ENABLE_MINI_CAR']
 
 
 # carstate standalone tester
