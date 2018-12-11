@@ -1,5 +1,6 @@
 from common.numpy_fast import interp
 from selfdrive.controls.lib.latcontrol_helpers import model_polyfit, calc_desired_path, compute_path_pinv
+import json
 
 CAMERA_OFFSET = 0.06  # m from center car to camera
 
@@ -21,6 +22,9 @@ class PathPlanner(object):
       p_poly = model_polyfit(md.model.path.points, self._path_pinv)  # predicted path
       l_poly = model_polyfit(md.model.leftLane.points, self._path_pinv)  # left line
       r_poly = model_polyfit(md.model.rightLane.points, self._path_pinv)  # right line
+
+      with open("/mnt/offset") as offset:
+        CAMERA_OFFSET = json.load(offset)
 
       # only offset left and right lane lines; offsetting p_poly does not make sense
       l_poly[3] += CAMERA_OFFSET
