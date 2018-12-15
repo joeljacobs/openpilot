@@ -5,7 +5,6 @@ if [ -z "$PASSIVE" ]; then
 fi
 
 function launch {
-<<<<<<< HEAD
   # apply update
 #  if [ "$(git rev-parse HEAD)" != "$(git rev-parse @{u})" ]; then
 #     git reset --hard @{u} &&
