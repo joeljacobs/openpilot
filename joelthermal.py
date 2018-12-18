@@ -3,6 +3,19 @@ import urllib2
 import urllib
 import json
 from secret import *
+##To read car battery level##
+##Allows access to Panda's "health" packets
+import selfdrive.messaging as messaging
+import zmq
+from selfdrive.services import service_list
+context = zmq.Context()
+health_sock = messaging.sub_sock(context, service_list['health'].port)
+health_sock.RCVTIMEO = 1500
+health = messaging.recv_sock(health_sock, wait=True)
+voltage = health.health.voltage
+#print(str(voltage))
+#print(str(health.health.current)+" current")
+## car battery level block end ##
 
 def read_tz(x):
   with open("/sys/devices/virtual/thermal/thermal_zone%d/temp" % x) as f:
@@ -57,3 +70,6 @@ if batF > 130:
     sendPushover("Eon Temp", str(batF))
 if battery < 10:
     sendPushover("Eon Batt Low", charged)
+
+if voltage < 11000:
+  sendPushover("Car Batt Low!", str(voltage)) 
